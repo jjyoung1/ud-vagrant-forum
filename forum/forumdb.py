@@ -2,6 +2,7 @@
 
 import datetime
 import psycopg2
+import bleach
 
 
 def get_posts():
@@ -29,11 +30,11 @@ def add_post(content):
     # Create connection
     db = psycopg2.connect(dbname='forum')
 
-    # Setup sql insert statement
-    sql = "INSERT INTO posts VALUES ('%s')" % content
+    content = bleach.clean(content)
+    content = bleach.linkify(content)
 
     # Execute request and close the connection
     c = db.cursor()
-    c.execute(sql)
+    c.execute("INSERT INTO posts (content) VALUES (%s)", (content,))
     db.commit()
     db.close()
