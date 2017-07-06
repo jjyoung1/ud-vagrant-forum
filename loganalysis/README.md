@@ -6,20 +6,20 @@ Requirements:
 3. psycopg2 library installed
 
 ##SQL Views:
--- Create view for number article views from logs
+### Create view for number article views from logs
 CREATE VIEW article_reads_view AS
   SELECT title, author, count(*) AS read_count
   FROM log JOIN articles ON log.path  LIKE '%' || articles.slug || '%'
   WHERE path != '/'
   GROUP BY author, title;
 
--- Total number of requests per day
+### Total number of requests per day
 CREATE VIEW daily_requests AS
 SELECT date_trunc('day', time) as day, count(*) as num_reqs
   FROM log
   GROUP BY day;
 
--- Total number of errors per day
+### Total number of errors per day
 CREATE VIEW daily_errors AS
 SELECT status, date_trunc('day', time) as day, count(*) as num_errors
   FROM log
