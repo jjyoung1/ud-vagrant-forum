@@ -10,7 +10,7 @@ Requirements:
 CREATE VIEW article_reads_view AS
   SELECT title, author, count(*) AS read_count
   FROM log JOIN articles ON log.path  LIKE '%' || articles.slug || '%'
-  WHERE path != '/'
+  WHERE path != '/' AND log.status = '200 OK'
   GROUP BY author, title;
 
 ### Total number of requests per day
