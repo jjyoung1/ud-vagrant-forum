@@ -3,6 +3,7 @@ import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -27,7 +28,20 @@ class MenuItem(Base):
     restaurant = relationship(Restaurant)
 
 
+# Create engine for specified database
 engine = create_engine('sqlite:///restaurantmenu.db')
 
+# Bind the engine to the declarative_base
+Base.metadata.bind = engine
 
 Base.metadata.create_all(engine)
+
+# Create factory for making Session objects
+DBSession = sessionmaker(bind = engine)
+
+####### Example Code ########
+# newEntry = ClassName(property = "value", ...)
+# session = DBSession()
+# session.add(newEntry)
+# session.commit()
+
