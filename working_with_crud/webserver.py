@@ -41,8 +41,16 @@ class WebserverHandler(BaseHTTPRequestHandler):
                 self.restaurants_edit_get(id)
                 return
 
+            p = re.compile('/restaurants/(\d+)/delete$')
+            m = p.search(self.path)
+            if (m):
+                id = m.group(1)
+                print("RestaurantID: {}".format(m.group(1)))
+                self.restaurants_delete_get(id)
+                return
+
         except IOError:
-            self.send_error(404, "File Not Found {}".format(self.path))
+                self.send_error(404, "File Not Found {}".format(self.path))
 
     def do_POST(self):
         try:
@@ -60,6 +68,14 @@ class WebserverHandler(BaseHTTPRequestHandler):
                 id = m.group(1)
                 print("RestaurantID: {}".format(m.group(1)))
                 self.restaurants_edit_post(id)
+                return
+
+            p = re.compile('/restaurants/(\d+)/delete$')
+            m = p.search(self.path)
+            if (m):
+                id = m.group(1)
+                print("RestaurantID: {}".format(m.group(1)))
+                self.restaurants_delete_post(id)
                 return
 
         except Exception as e:
@@ -190,6 +206,37 @@ class WebserverHandler(BaseHTTPRequestHandler):
         session.add(r)
         session.commit()
         print('New restaurant name: {}'.format(name))
+        return
+
+    def restaurants_delete_get(self, id):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        r = session.query(Restaurant).filter_by(id=id).first()
+
+        output = ''
+        output += '<html><body>'
+        output += '<h1>Are you sure you want to delete {}?</h1>'.format(r.name)
+        output += '<form  enctype="multipart/form-data" action="/restaurants/{}/delete" method="POST">'.format(id)
+        output += '<input type="submit" value="Delete">'
+        output += "</form>"
+        output += "</html></body>"
+        self.wfile.write(output.encode())
+        print(output)
+        return
+
+    def restaurants_delete_post(self, id):
+        self.send_response(303)
+        self.send_header('Content-type', 'text/html')
+        self.send_header("Location","/restaurants")
+        self.end_headers()
+
+        r = session.query(Restaurant).filter_by(id=id).first()
+
+        session.delete(r)
+        session.commit()
+        print('{} deleted'.format(r.name))
         return
 
     def hello_post(self):
