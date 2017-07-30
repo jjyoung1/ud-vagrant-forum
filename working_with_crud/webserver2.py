@@ -14,68 +14,78 @@ form = '''
 
 
 class webserverHandler(BaseHTTPRequestHandler):
+    def hello_get(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        output = ""
+        output += "<html><body>" \
+                  "Hello!"
+        output += form
+        output += "</body></html>"
+
+        output += "</body></html>"
+        self.wfile.write(output.encode())
+        print(output)
+        return
+
+    def hello_post(self):
+        self.send_response(301)
+        self.end_headers()
+        formResp = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD': 'POST'})
+        message = formResp.getvalue("message", '{no message}')
+
+        output = ""
+        output += "<html><body>"
+        output += "<h2> Okay, how about this: </h2>"
+        output += "<h1> {} </h1>".format(message)
+
+        output += form
+        output += "</body></html>"
+
+        self.wfile.write(output.encode())
+        print(output)
+
+        return
+
+    def hola_get(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        output = ""
+        output += "<html><body>"
+        output += "&#161Hola!"
+        output += "<br><a href='/hello'>Back to Hello</a"
+        output += form
+        output += "</body></html>"
+        self.wfile.write(output.encode())
+        print(output)
+        return
+
     def do_GET(self):
         try:
             if self.path.endswith("/hello"):
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
-
-                output = ""
-                output += "<html><body>" \
-                          "Hello!"
-                output += form
-                output += "</body></html>"
-
-                output += "</body></html>"
-                self.wfile.write(output.encode())
-                print(output)
+                self.hello_get()
                 return
 
             if self.path.endswith("/hola"):
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
-
-                output = ""
-                output += "<html><body>"
-                output += "&#161Hola!"
-                output += "<br><a href='/hello'>Back to Hello</a"
-                output += form
-                output += "</body></html>"
-                self.wfile.write(output.encode())
-                print(output)
+                self.hola_get()
                 return
 
         except IOError:
             self.send_error(404, "File Not Found {}".format(self.path))
 
+
     def do_POST(self):
         try:
             if self.path.endswith("/hello"):
-                self.send_response(301)
-                self.end_headers()
-                formResp = cgi.FieldStorage(
-                    fp=self.rfile,
-                    headers=self.headers,
-                    environ={'REQUEST_METHOD':'POST'})
-                message = formResp.getvalue("message",'{no message}')
-
-                # length = int(self.headers.get('Content-Length', 0))
-                # ctype, pdict = parse_header(self.headers['content-type'])
-                # postvars = parse_multipart(self.rfile, pdict)
-                # messagecontent = postvars['message']
-
-                output = ""
-                output += "<html><body>"
-                output += "<h2> Okay, how about this: </h2>"
-                output += "<h1> {} </h1>".format(message)
-
-                output += form
-                output += "</body></html>"
-
-                self.wfile.write(output.encode())
-                print(output)
+                self.hello_post()
+            return
 
         except Exception as e:
             print(e)
