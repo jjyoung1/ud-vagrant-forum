@@ -1,10 +1,12 @@
 #!/usr/bin python3
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
+
 from working_with_crud.database_setup import Base, Restaurant, MenuItem
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import cgi
+import re
 
 engine = create_engine('sqlite:///restaurantmenu.db')
 Base.metadata.bind = engine
@@ -29,6 +31,14 @@ class WebserverHandler(BaseHTTPRequestHandler):
 
             if self.path.endswith("/restaurants/new"):
                 self.restaurants_new_get()
+                return
+
+            p = re.compile('/restaurants/(\d+)/edit$')
+            m = p.search(self.path)
+            if (m):
+                id = m.group(1)
+                print("RestaurantID: {}".format(m.group(1)))
+                self.restaurants_edit_get(id)
                 return
 
         except IOError:
@@ -89,9 +99,11 @@ class WebserverHandler(BaseHTTPRequestHandler):
         output += "<h2><a href='restaurants/new'>Make a New Restaurant</a><br></h2>"
         for r in restaurants:
             print(r)
+
             output += r.name + '<br>'
-            output += "<a href=#>Edit</a><br>"
-            output += "<a href=#>Delete</a><br><br>"
+            url = "/restaurants/{}".format(r.id)
+            output += "<a href='{}/edit'>Edit</a><br>".format(url)
+            output += "<a href='{}/delete'>Delete</a><br><br>".format(url)
         output += "</body></html>"
         self.wfile.write(output.encode())
         print(output)
@@ -105,9 +117,8 @@ class WebserverHandler(BaseHTTPRequestHandler):
         output = ''
         output += '<html><body>'
         output += '<h1>Make a New Restaurant</h1>'
-        output += '<form>'
-        output += '<input type="text" name="name" id="name" placeholder="Restaurant Name "'
-        output +=     "action='restaurant_new' method='post'>"
+        output += '<form  enctype="multipart/form-data" action="/restaurants/new" method="POST">'
+        output += '<input type="text" name="name" id="name" placeholder="Restaurant Name">'
         output += '<input type="submit" value="Create">'
         output += "</form>"
         output += "</html></body>"
@@ -116,7 +127,42 @@ class WebserverHandler(BaseHTTPRequestHandler):
         return
 
     def restaurants_new_post(self):
+        self.send_response(303)
+        self.send_header('Content-type', 'text/html')
+        self.send_header("Location","/restaurants")
+        self.end_headers()
+
+        form_resp = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD': 'POST'})
+        name = form_resp.getvalue("name", '{no name}')
+
+        r = Restaurant(name=name)
+        session.add(r)
+        session.commit()
+        print('New restaurant: {}'.format(name))
         return
+
+    def restaurants_edit_get(self, id):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        r = session.query(Restaurant).filter_by(id=id).first()
+
+        output = ''
+        output += '<html><body>'
+        output += '<h1>{}</h1>'.format(r.name)
+        output += '<form  enctype="multipart/form-data" action="/restaurants/{}/edit" method="POST">'.format(id)
+        output += '<input type="text" name="name" id="name" placeholder="Restaurant Name">'
+        output += '<input type="submit" value="Rename">'
+        output += "</form>"
+        output += "</html></body>"
+        self.wfile.write(output.encode())
+        print(output)
+        return
+
 
     def hello_post(self):
         self.send_response(301)
