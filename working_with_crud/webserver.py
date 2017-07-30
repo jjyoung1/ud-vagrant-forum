@@ -1,3 +1,4 @@
+#!/usr/bin python3
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 from working_with_crud.database_setup import Base, Restaurant, MenuItem
