@@ -1,8 +1,16 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
+from working_with_crud.database_setup import Base, Restaurant, MenuItem
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import cgi
 
-class webserverHandler(BaseHTTPRequestHandler):
+engine = create_engine('sqlite:///restaurantmenu.db')
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+class WebserverHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             if self.path.endswith("/hello"):
@@ -11,6 +19,10 @@ class webserverHandler(BaseHTTPRequestHandler):
 
             if self.path.endswith("/hola"):
                 self.hola_get()
+                return
+
+            if self.path.endswith("/restaurants"):
+                self.restaurants_get()
                 return
 
         except IOError:
@@ -44,7 +56,23 @@ class webserverHandler(BaseHTTPRequestHandler):
                           <input name='message' type='text'>
                           <input type='submit' value='Submit'></form>"""
         output += "</body></html>"
-        output += "</body></html>"
+        self.wfile.write(output.encode())
+        print(output)
+        return
+
+    def restaurants_get(self):
+        restaurants = session.query(Restaurant).all()
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+
+        output="<html><body>"
+        output+="<h1>Restaurants</h1>"
+        for r in restaurants:
+            print(r)
+            output += r.name + '<br>'
+
+        output+="</body></html>"
         self.wfile.write(output.encode())
         print(output)
         return
@@ -60,16 +88,19 @@ class webserverHandler(BaseHTTPRequestHandler):
     def hello_post(self):
         self.send_response(301)
         self.end_headers()
-        ctype, pdict = cgi.parse_header(self.headers['content-type'])
-        pdict['boundary'] = bytes(pdict['boundary'], "utf-8")
-        if ctype == 'multipart/form-data':
-            fields = cgi.parse_multipart(self.rfile, pdict)
-            messagecontent = fields["message"][0].decode()
+        # ctype, pdict = cgi.parse_header(self.headers['content-type'])
+        # pdict['boundary'] = bytes(pdict['boundary'], "utf-8")
+        # if ctype == 'multipart/form-data':
+        #     fields = cgi.parse_multipart(self.rfile, pdict)
+        #     messagecontent = fields["message"][0].decode()
 
-        # length = int(self.headers.get('Content-Length', 0))
-        # data = self.rfile.read(length).decode()
-        # params = parse_qs(data)
-        # messagecontent = params['message'][0]
+        form_resp = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD': 'POST'})
+        messagecontent = form_resp.getvalue("message", '{no message}')
+
+
         output = ""
         output += "<html><body>"
         output += "<h2> Okay, how about this: </h2>"
@@ -82,11 +113,10 @@ class webserverHandler(BaseHTTPRequestHandler):
         self.wfile.write(output.encode())
         print(output)
 
-
 def main():
     try:
         port = 8080
-        server = HTTPServer(('', port), webserverHandler)
+        server = HTTPServer(('', port), WebserverHandler)
         print("Web server running on port {}".format(port))
         server.serve_forever()
 

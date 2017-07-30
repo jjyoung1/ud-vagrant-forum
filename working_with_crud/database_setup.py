@@ -32,12 +32,12 @@ class MenuItem(Base):
 engine = create_engine('sqlite:///restaurantmenu.db')
 
 # Bind the engine to the declarative_base
-Base.metadata.bind = engine
+# Base.metadata.bind = engine
 
 Base.metadata.create_all(engine)
 
 # Create factory for making Session objects
-DBSession = sessionmaker(bind = engine)
+# DBSession = sessionmaker(bind = engine)
 
 ####### Example Code ########
 # newEntry = ClassName(property = "value", ...)
