@@ -53,8 +53,17 @@ class WebserverHandler(BaseHTTPRequestHandler):
                 self.restaurants_new_post()
                 return
 
+
+            p = re.compile('/restaurants/(\d+)/edit$')
+            m = p.search(self.path)
+            if (m):
+                id = m.group(1)
+                print("RestaurantID: {}".format(m.group(1)))
+                self.restaurants_edit_post(id)
+                return
+
         except Exception as e:
-            print(e)
+                print(e)
 
     def hola_get(self):
         self.send_response(200)
@@ -163,6 +172,25 @@ class WebserverHandler(BaseHTTPRequestHandler):
         print(output)
         return
 
+    def restaurants_edit_post(self, id):
+        self.send_response(303)
+        self.send_header('Content-type', 'text/html')
+        self.send_header("Location","/restaurants")
+        self.end_headers()
+
+        r = session.query(Restaurant).filter_by(id=id).first()
+
+        form_resp = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD': 'POST'})
+        name = form_resp.getvalue("name", '{no name}')
+
+        r.name = name
+        session.add(r)
+        session.commit()
+        print('New restaurant name: {}'.format(name))
+        return
 
     def hello_post(self):
         self.send_response(301)
