@@ -11,6 +11,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 class WebserverHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
@@ -26,8 +27,24 @@ class WebserverHandler(BaseHTTPRequestHandler):
                 self.restaurants_get()
                 return
 
+            if self.path.endswith("/restaurants/new"):
+                self.restaurants_new_get()
+                return
+
         except IOError:
             self.send_error(404, "File Not Found {}".format(self.path))
+
+    def do_POST(self):
+        try:
+            if self.path.endswith("/hello"):
+                self.hello_post()
+
+            if self.path.endswith("/restaurants/new"):
+                self.restaurants_new_post()
+                return
+
+        except Exception as e:
+            print(e)
 
     def hola_get(self):
         self.send_response(200)
@@ -67,24 +84,39 @@ class WebserverHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        output="<html><body>"
-        output+="<h1>Restaurants</h1>"
+        output = "<html><body>"
+        output += "<h1>Restaurants</h1>"
+        output += "<h2><a href='restaurants/new'>Make a New Restaurant</a><br></h2>"
         for r in restaurants:
             print(r)
             output += r.name + '<br>'
-
-        output+="</body></html>"
+            output += "<a href=#>Edit</a><br>"
+            output += "<a href=#>Delete</a><br><br>"
+        output += "</body></html>"
         self.wfile.write(output.encode())
         print(output)
         return
 
-    def do_POST(self):
-        try:
-            if self.path.endswith("/hello"):
-                self.hello_post()
+    def restaurants_new_get(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
 
-        except Exception as e:
-            print(e)
+        output = ''
+        output += '<html><body>'
+        output += '<h1>Make a New Restaurant</h1>'
+        output += '<form>'
+        output += '<input type="text" name="name" id="name" placeholder="Restaurant Name "'
+        output +=     "action='restaurant_new' method='post'>"
+        output += '<input type="submit" value="Create">'
+        output += "</form>"
+        output += "</html></body>"
+        self.wfile.write(output.encode())
+        print(output)
+        return
+
+    def restaurants_new_post(self):
+        return
 
     def hello_post(self):
         self.send_response(301)
@@ -101,7 +133,6 @@ class WebserverHandler(BaseHTTPRequestHandler):
             environ={'REQUEST_METHOD': 'POST'})
         messagecontent = form_resp.getvalue("message", '{no message}')
 
-
         output = ""
         output += "<html><body>"
         output += "<h2> Okay, how about this: </h2>"
@@ -113,6 +144,7 @@ class WebserverHandler(BaseHTTPRequestHandler):
         output += "</body></html>"
         self.wfile.write(output.encode())
         print(output)
+
 
 def main():
     try:
