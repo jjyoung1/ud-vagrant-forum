@@ -2,20 +2,24 @@ from flask import Flask, request, redirect, render_template, url_for
 
 app = Flask(__name__)
 
-#Fake Restaurants
+# Fake Restaurants
 restaurant = {'name': 'The CRUDdy Crab', 'id': '1'}
 
 restaurants = [{'name': 'The CRUDdy Crab', 'id': '1'},
-               {'name':'Blue Burgers', 'id':'2'},
-               {'name':'Taco Hut', 'id':'3'}]
+               {'name': 'Blue Burgers', 'id': '2'},
+               {'name': 'Taco Hut', 'id': '3'}]
 
-#Fake Menu Items
-items = [ {'name':'Cheese Pizza', 'description':'made with fresh cheese', 'price':'$5.99','course' :'Entree', 'id':'1'},
-          {'name':'Chocolate Cake','description':'made with Dutch Chocolate', 'price':'$3.99', 'course':'Dessert','id':'2'},
-          {'name':'Caesar Salad', 'description':'with fresh organic vegetables','price':'$5.99', 'course':'Entree','id':'3'},
-          {'name':'Iced Tea', 'description':'with lemon','price':'$.99', 'course':'Beverage','id':'4'},
-          {'name':'Spinach Dip', 'description':'creamy dip with fresh spinach','price':'$1.99', 'course':'Appetizer','id':'5'} ]
-item =  {'name':'Cheese Pizza','description':'made with fresh cheese','price':'$5.99','course' :'Entree'}
+# Fake Menu Items
+items = [
+    {'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree', 'id': '1'},
+    {'name': 'Chocolate Cake', 'description': 'made with Dutch Chocolate', 'price': '$3.99', 'course': 'Dessert',
+     'id': '2'},
+    {'name': 'Caesar Salad', 'description': 'with fresh organic vegetables', 'price': '$5.99', 'course': 'Entree',
+     'id': '3'},
+    {'name': 'Iced Tea', 'description': 'with lemon', 'price': '$.99', 'course': 'Beverage', 'id': '4'},
+    {'name': 'Spinach Dip', 'description': 'creamy dip with fresh spinach', 'price': '$1.99', 'course': 'Appetizer',
+     'id': '5'}]
+item = {'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree'}
 
 
 @app.route('/restaurants')
@@ -24,7 +28,7 @@ def list_restaurants():
     return render_template('restaurants.html', restaurants=restaurants)
 
 
-@app.route('/restaurant/new',methods=['GET','POST'])
+@app.route('/restaurant/new', methods=['GET', 'POST'])
 def new_restaurant():
     if request.method == 'POST':
 
@@ -38,20 +42,20 @@ def new_restaurant():
 # def restaurant_menu(restaurant_id):
 #     return "Menu for restaurant {}".format(restaurant_id)
 
-@app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
+@app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET', 'POST'])
 def restaurant_edit(restaurant_id):
-    a_restaurant = restaurants[restaurant_id-1]
+    a_restaurant = restaurants[restaurant_id - 1]
     if request.method == "POST":
-        return redirect( url_for('list_restaurants'))
+        return redirect(url_for('list_restaurants'))
     else:
         return render_template('editRestaurant.html', restaurant=a_restaurant)
 
 
-@app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET','POST'])
+@app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET', 'POST'])
 def restaurant_delete(restaurant_id):
-    a_restaurant = restaurants[restaurant_id-1]
+    a_restaurant = restaurants[restaurant_id - 1]
     if request.method == "POST":
-        return redirect( url_for('list_restaurants'))
+        return redirect(url_for('list_restaurants'))
     else:
         return render_template('deleteRestaurant.html', restaurant=a_restaurant)
 
@@ -59,7 +63,10 @@ def restaurant_delete(restaurant_id):
 @app.route('/restaurant/<int:restaurant_id>')
 @app.route('/restaurant/<int:restaurant_id>/menu')
 def restaurant_menu(restaurant_id):
-    return "Display menu for restaurant {}".format(restaurant_id)
+    restaurant_name = restaurants[restaurant_id - 1].get('name')
+    menu = items
+    return render_template('menuV2.html', restaurant_name=restaurant_name,
+                           menu=menu)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/new')
@@ -81,6 +88,3 @@ if __name__ == '__main__':
     app.secret_key = '4b$3H7of7E!-KyU#QCTw#c7Bdj_4#5'
     app.debug = True
     app.run('0.0.0.0', port=8080)
-
-
-
