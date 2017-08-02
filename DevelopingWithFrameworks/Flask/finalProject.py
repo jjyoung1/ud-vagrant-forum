@@ -20,7 +20,13 @@ def list_restaurants():
 @app.route('/restaurant/new', methods=['GET', 'POST'])
 def new_restaurant():
     if request.method == 'POST':
-
+        r = Restaurant()
+        r.name = request.form.get('name')
+        if (r.name):
+            session.add(r)
+            session.commit()
+        else:
+            flash("No name given for Restaurant...not created")
         return redirect(url_for('list_restaurants'))
     else:
         return render_template('newRestaurant.html')
@@ -33,8 +39,11 @@ def new_restaurant():
 
 @app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET', 'POST'])
 def restaurant_edit(restaurant_id):
-    a_restaurant = restaurants[restaurant_id - 1]
+    a_restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == "POST":
+        a_restaurant.name = request.form['name']
+        session.add(a_restaurant)
+        session.commit()
         return redirect(url_for('list_restaurants'))
     else:
         return render_template('editRestaurant.html', restaurant=a_restaurant)
@@ -42,8 +51,10 @@ def restaurant_edit(restaurant_id):
 
 @app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET', 'POST'])
 def restaurant_delete(restaurant_id):
-    a_restaurant = restaurants[restaurant_id - 1]
+    a_restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == "POST":
+        session.delete(a_restaurant)
+        session.commit()
         return redirect(url_for('list_restaurants'))
     else:
         return render_template('deleteRestaurant.html', restaurant=a_restaurant)
