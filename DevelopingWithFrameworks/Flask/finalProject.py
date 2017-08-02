@@ -60,7 +60,7 @@ def restaurant_delete(restaurant_id):
         return render_template('deleteRestaurant.html', restaurant=a_restaurant)
 
 
-@app.route('/restaurant/<int:restaurant_id>')
+# @app.route('/restaurant/<int:restaurant_id>')
 @app.route('/restaurant/<int:restaurant_id>/menu')
 def restaurant_menu(restaurant_id):
     restaurant_name = restaurants[restaurant_id - 1].get('name')
@@ -69,9 +69,23 @@ def restaurant_menu(restaurant_id):
                            menu=menu)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/new')
+@app.route('/restaurant/<int:restaurant_id>/menu/new', methods=['GET','POST'])
 def menu_item_new(restaurant_id):
-    return "Created menu item for restaurant {}".format(restaurant_id)
+    if request.method == 'POST':
+        name=request.form['name']
+        price=request.form.get('price')
+        description=request.form.get('description')
+        course=request.form.get('course')
+        out = '''
+            name={}\n
+            description={}\n
+            price={}\n
+            course={}
+        '''.format(name, description, price, course)
+        print(out)
+        return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
+    else:
+        return render_template('newMenuItemV2.html',restaurant_id=restaurant_id)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/edit')

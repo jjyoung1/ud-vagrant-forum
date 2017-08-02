@@ -5,6 +5,26 @@
     <title>New Menu Item</title>
 </head>
 <body>
+<h1>Add a New Menu Item</h1>
 
+<form action="{{url_for('menu_item_new',restaurant_id=restaurant_id, menu_item=menu_item)}}", method="POST">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" size="40" placeholder="Name">
+    <br>
+    <label for="course">Course</label>
+    <input type="text" id="course" name="course" size="20" placeholder="Course">
+    <br>
+
+    <label for="price">Price</label>
+    <input type="text" id="price" name="price" size="10" placeholder="0.00">
+    <br>
+
+    <label for="descripton">Description</label>
+    <input type="textarea" id="descripton" name="description" rows="4" cols="40">
+    <br>
+
+    <button type="submit" value="Submit">Submit</button>
+    <button type="button" action="window.location.href='{{url_for('restaurant_menu',restaurant_id=restaurant_id)}}'; ">Cancel</button>
+</form>
 </body>
 </html>
