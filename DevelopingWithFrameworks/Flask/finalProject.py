@@ -69,13 +69,13 @@ def restaurant_menu(restaurant_id):
                            menu=menu)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/new', methods=['GET','POST'])
+@app.route('/restaurant/<int:restaurant_id>/menu/new', methods=['GET', 'POST'])
 def menu_item_new(restaurant_id):
     if request.method == 'POST':
-        name=request.form['name']
-        price=request.form.get('price')
-        description=request.form.get('description')
-        course=request.form.get('course')
+        name = request.form['name']
+        price = request.form.get('price')
+        description = request.form.get('description')
+        course = request.form.get('course')
         out = '''
             name={}\n
             description={}\n
@@ -85,17 +85,38 @@ def menu_item_new(restaurant_id):
         print(out)
         return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
     else:
-        return render_template('newMenuItemV2.html',restaurant_id=restaurant_id)
+        return render_template('newMenuItemV2.html', restaurant_id=restaurant_id)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/edit')
+@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/edit', methods=['GET', 'POST'])
 def menu_item_edit(restaurant_id, menu_item_id):
-    return "Edited menu item {} for restaurant {}".format(menu_item_id, restaurant_id)
+    menu_item = items[menu_item_id - 1]
+    if request.method == "POST":
+        name = request.form['name']
+        price = request.form.get('price')
+        description = request.form.get('description')
+        course = request.form.get('course')
+        out = '''
+            name={}\n
+            description={}\n
+            price={}\n
+            course={}
+        '''.format(name, description, price, course)
+        print(out)
+        return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
+    else:
+        return render_template('editMenuItemV2.html', restaurant_id=restaurant_id,
+                               menu_item=menu_item)
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/delete')
+@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/delete', methods=['GET','POST'])
 def menu_item_delete(restaurant_id, menu_item_id):
-    return "Deleted menu item {} for restaurant {}".format(menu_item_id, restaurant_id)
+    menu_item = items[menu_item_id-1]
+    if request.method == "POST":
+
+        return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
+    else:
+        return render_template('deleteMenuItemV2.html', restaurant_id=restaurant_id, menu_item=menu_item)
 
 
 if __name__ == '__main__':
