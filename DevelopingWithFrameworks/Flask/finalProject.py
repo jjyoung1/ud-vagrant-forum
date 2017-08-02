@@ -63,13 +63,13 @@ def restaurant_delete(restaurant_id):
 # @app.route('/restaurant/<int:restaurant_id>')
 @app.route('/restaurant/<int:restaurant_id>/menu')
 def restaurant_menu(restaurant_id):
-    restaurant_name = restaurants[restaurant_id - 1].get('name')
-    menu = items_empty
-    return render_template('menuV2.html', restaurant_name=restaurant_name,
-                           menu=menu)
+    r = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    menu = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+    return render_template('menuV2.html', restaurant=r, menu=menu)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/new', methods=['GET', 'POST'])
+# TODO Implement backend
 def menu_item_new(restaurant_id):
     if request.method == 'POST':
         name = request.form['name']
@@ -89,6 +89,7 @@ def menu_item_new(restaurant_id):
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/edit', methods=['GET', 'POST'])
+# TODO Implement backend
 def menu_item_edit(restaurant_id, menu_item_id):
     menu_item = items[menu_item_id - 1]
     if request.method == "POST":
@@ -110,6 +111,7 @@ def menu_item_edit(restaurant_id, menu_item_id):
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/delete', methods=['GET','POST'])
+# TODO Implement backend
 def menu_item_delete(restaurant_id, menu_item_id):
     menu_item = items[menu_item_id-1]
     if request.method == "POST":

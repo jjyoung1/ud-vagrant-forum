@@ -5,8 +5,7 @@
     <title>{{restaurant_name}} - Menu</title>
 </head>
 <body>
-<h1>{{restaurant_name}} - Menu</h1>
-
+<h1>{{restaurant.name}} - Menu</h1>
 <ul>
     {% if not menu %}
     <p>There are no items in the menu</p>
@@ -17,8 +16,9 @@
         {{ item.description }}
         {{ item.course }}
         {{ item.price }}
-
     </li>
+    <button type="button" onclick="window.location.href = '{{url_for('menu_item_edit',restaurant_id=restaurant.id, menu_item_id=item.id) }}';">Edit</button>
+    <button type="button" onclick="window.location.href = '{{url_for('menu_item_delete',restaurant_id=restaurant.id, menu_item_id=item.id) }}';">Delete</button>
     {% endfor %}
     {% endif %}
 </ul>
