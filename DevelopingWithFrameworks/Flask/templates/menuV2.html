@@ -5,18 +5,22 @@
     <title>{{restaurant_name}} - Menu</title>
 </head>
 <body>
-    <h1>{{restaurant_name}} - Menu</h1>
+<h1>{{restaurant_name}} - Menu</h1>
 
-    <ul>
-        {% for item in menu %}
-        <li>
-            {{ item.name }}
-            {{ item.description }}
-            {{ item.course }}
-            {{ item.price }}
+<ul>
+    {% if not menu %}
+    <p>There are no items in the menu</p>
+    {% else %}
+    {% for item in menu %}
+    <li>
+        {{ item.name }}
+        {{ item.description }}
+        {{ item.course }}
+        {{ item.price }}
 
-        </li>
-        {% endfor %}
-    </ul>
+    </li>
+    {% endfor %}
+    {% endif %}
+</ul>
 </body>
 </html>

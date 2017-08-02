@@ -7,11 +7,14 @@
 <body>
 <h1>Restaurants</h1>
 <ul>
-
+    {% if not restaurants %}
+    <p>There are no restaurants</p>
+    {% else %}
     {% for restaurant in restaurants: %}
     <li>{{ restaurant.name }}</li>
     {% endfor %}
+    <% endif %}
 </ul>
-    <a href="{{url_for('new_restaurant')}}">Add a new restaurant</a>
+<a href="{{url_for('new_restaurant')}}">Add a new restaurant</a>
 </body>
 </html>

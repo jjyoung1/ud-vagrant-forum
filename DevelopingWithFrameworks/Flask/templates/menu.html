@@ -23,9 +23,8 @@
         <p class="name">{{i.name}}</p>
         <p class="price"> {{i.price}} </p>
         <p class="description">{{i.description}}</p>
-
     </div>
-    <!--  {{i.id}} -->
+
     <br>
     <a href="{{ url_for('editMenuItem', restaurant_id=restaurant.id, MenuID=i.id) }}">Edit</a>
 

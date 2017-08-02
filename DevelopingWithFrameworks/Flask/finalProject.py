@@ -20,7 +20,7 @@ items = [
     {'name': 'Spinach Dip', 'description': 'creamy dip with fresh spinach', 'price': '$1.99', 'course': 'Appetizer',
      'id': '5'}]
 item = {'name': 'Cheese Pizza', 'description': 'made with fresh cheese', 'price': '$5.99', 'course': 'Entree'}
-
+items_empty = []
 
 @app.route('/restaurants')
 @app.route('/')
@@ -64,7 +64,7 @@ def restaurant_delete(restaurant_id):
 @app.route('/restaurant/<int:restaurant_id>/menu')
 def restaurant_menu(restaurant_id):
     restaurant_name = restaurants[restaurant_id - 1].get('name')
-    menu = items
+    menu = items_empty
     return render_template('menuV2.html', restaurant_name=restaurant_name,
                            menu=menu)
 
