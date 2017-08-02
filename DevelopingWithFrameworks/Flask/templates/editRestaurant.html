@@ -5,6 +5,16 @@
     <title>Edit Restaurant</title>
 </head>
 <body>
+<h1>Edit Restaurant Name</h1>
+<form action="{{url_for('restaurant_edit',restaurant_id=restaurant.id)}}" method="post">
 
+    <label>Name:</label>
+    <input type="text" size="50" id="name" placeholder="{{restaurant.name}}">
+
+    <button type="submit" action="url_for('restaurant_edit', restaurant_id=restaurant.id)
+        restaurant_id=restaurant_id)">Rename
+    </button>
+    <button type="button" onclick="window.location.href='{{ url_for('list_restaurants') }}';">Cancel</button>
+</form>
 </body>
 </html>

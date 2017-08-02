@@ -38,14 +38,22 @@ def new_restaurant():
 # def restaurant_menu(restaurant_id):
 #     return "Menu for restaurant {}".format(restaurant_id)
 
-@app.route('/restaurant/<int:restaurant_id>/edit')
+@app.route('/restaurant/<int:restaurant_id>/edit', methods=['GET','POST'])
 def restaurant_edit(restaurant_id):
-    return "Edited restaurant {}".format(restaurant_id)
+    a_restaurant = restaurants[restaurant_id-1]
+    if request.method == "POST":
+        return redirect( url_for('list_restaurants'))
+    else:
+        return render_template('editRestaurant.html', restaurant=a_restaurant)
 
 
-@app.route('/restaurant/<int:restaurant_id>/delete')
+@app.route('/restaurant/<int:restaurant_id>/delete', methods=['GET','POST'])
 def restaurant_delete(restaurant_id):
-    return "Deleted restaurant {}".format(restaurant_id)
+    a_restaurant = restaurants[restaurant_id-1]
+    if request.method == "POST":
+        return redirect( url_for('list_restaurants'))
+    else:
+        return render_template('deleteRestaurant.html', restaurant=a_restaurant)
 
 
 @app.route('/restaurant/<int:restaurant_id>')
