@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, request, redirect, render_template, url_for
 
 app = Flask(__name__)
 
@@ -19,13 +19,18 @@ item =  {'name':'Cheese Pizza','description':'made with fresh cheese','price':'$
 
 
 @app.route('/restaurants')
+@app.route('/')
 def list_restaurants():
     return render_template('restaurants.html', restaurants=restaurants)
 
 
-@app.route('/restaurant/new')
+@app.route('/restaurant/new',methods=['GET','POST'])
 def new_restaurant():
-    return "Create new restaurant"
+    if request.method == 'POST':
+
+        return redirect(url_for('list_restaurants'))
+    else:
+        return render_template('newRestaurant.html')
 
 
 # Saved for future restaurant info page
