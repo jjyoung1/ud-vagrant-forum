@@ -69,53 +69,43 @@ def restaurant_menu(restaurant_id):
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/new', methods=['GET', 'POST'])
-# TODO Implement backend
 def menu_item_new(restaurant_id):
     if request.method == 'POST':
-        name = request.form['name']
-        price = request.form.get('price')
-        description = request.form.get('description')
-        course = request.form.get('course')
-        out = '''
-            name={}\n
-            description={}\n
-            price={}\n
-            course={}
-        '''.format(name, description, price, course)
-        print(out)
+        item = MenuItem()
+        item.name = request.form['name']
+        item.description = request.form['description']
+        item.price = request.form['price']
+        item.course = request.form['course']
+        item.restaurant_id = restaurant_id
+        session.add(item)
+        session.commit()
         return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
     else:
         return render_template('newMenuItemV2.html', restaurant_id=restaurant_id)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/edit', methods=['GET', 'POST'])
-# TODO Implement backend
 def menu_item_edit(restaurant_id, menu_item_id):
-    menu_item = items[menu_item_id - 1]
+    item = session.query(MenuItem).filter_by(restaurant_id=restaurant_id, id=menu_item_id).one()
     if request.method == "POST":
-        name = request.form['name']
-        price = request.form.get('price')
-        description = request.form.get('description')
-        course = request.form.get('course')
-        out = '''
-            name={}\n
-            description={}\n
-            price={}\n
-            course={}
-        '''.format(name, description, price, course)
-        print(out)
+        item.name = request.form['name']
+        item.course = request.form['course']
+        item.price = request.form['price']
+        item.description = request.form['description']
+        session.add(item)
+        session.commit()
         return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
     else:
         return render_template('editMenuItemV2.html', restaurant_id=restaurant_id,
-                               menu_item=menu_item)
+                               menu_item=item)
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/delete', methods=['GET','POST'])
-# TODO Implement backend
 def menu_item_delete(restaurant_id, menu_item_id):
-    menu_item = items[menu_item_id-1]
+    menu_item = session.query(MenuItem).filter_by(restaurant_id=restaurant_id, id=menu_item_id).one()
     if request.method == "POST":
-
+        session.delete(menu_item)
+        session.commit()
         return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
     else:
         return render_template('deleteMenuItemV2.html', restaurant_id=restaurant_id, menu_item=menu_item)

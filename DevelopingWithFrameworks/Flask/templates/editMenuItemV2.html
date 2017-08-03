@@ -5,23 +5,23 @@
     <title>Edit Menu Item</title>
 </head>
 <body>
-<h1>Edit a New Menu Item</h1>
+<h1>Edit a Menu Item</h1>
 
-<form action="{{ url_for('menu_item_edit',restaurant_id=restaurant_id, menu_item_id=menu_item.get('id')) }}", method="POST">
+<form action="{{ url_for('menu_item_edit',restaurant_id=restaurant_id, menu_item_id=menu_item.id) }}", method="POST">
     <label for="name">Name</label>
-    <input type="text" name="name" id="name" size="40" value={{menu_item.get("name")}}>
+    <input type="text" name="name" id="name" size="40" value={{menu_item.name}}>
     <br>
     <label for="course">Course</label>
-    <input type="text" id="course" name="course" size="20" value={{menu_item.get("course")}}>
+    <input type="text" id="course" name="course" size="20" value={{menu_item.course}}>
     <br>
 
     <label for="price">Price</label>
-    <input type="text" id="price" name="price" size="10" value={{menu_item.get("price")}}>
+    <input type="text" id="price" name="price" size="10" value={{menu_item.price}}>
     <br>
 
     <label for="descripton">Description</label>
     <textarea id="descripton" name="description" rows="4" cols="40">
-        {{menu_item.get("description")}}
+        {{menu_item.description}}
     </textarea>
 
     <br>
