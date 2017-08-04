@@ -9,7 +9,7 @@
     <h2>Are you sure you wish to delete {{restaurant.name}}></h2>
     <form action="{{url_for('restaurant_delete', restaurant_id=restaurant.id)}}", method='post'>
         <button type="submit" value="Delete">Delete</button>
-        <button type="button" onclick="window.location.href='{{url_for('list_restaurants') }}'">Cancel</button>
+        <button type="button" onclick="window.location.href='{{url_for('restaurants') }}'">Cancel</button>
     </form>
 </body>
 </html>

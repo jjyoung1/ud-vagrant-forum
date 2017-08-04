@@ -12,10 +12,14 @@ session = DBSession()
 
 @app.route('/restaurants')
 @app.route('/')
-def list_restaurants():
+def restaurants():
     restaurants = session.query(Restaurant).all()
     return render_template('restaurants.html', restaurants=restaurants)
 
+@app.route('/restaurants/JSON')
+def restaurantsJSON():
+    restaurants = session.query(Restaurant).all()
+    return jsonify(Restaurant=[r.serialize for r in restaurants])
 
 @app.route('/restaurant/new', methods=['GET', 'POST'])
 def new_restaurant():
@@ -27,7 +31,7 @@ def new_restaurant():
             session.commit()
         else:
             flash("No name given for Restaurant...not created")
-        return redirect(url_for('list_restaurants'))
+        return redirect(url_for('restaurants'))
     else:
         return render_template('newRestaurant.html')
 
@@ -44,7 +48,7 @@ def restaurant_edit(restaurant_id):
         a_restaurant.name = request.form['name']
         session.add(a_restaurant)
         session.commit()
-        return redirect(url_for('list_restaurants'))
+        return redirect(url_for('restaurants'))
     else:
         return render_template('editRestaurant.html', restaurant=a_restaurant)
 
@@ -55,7 +59,7 @@ def restaurant_delete(restaurant_id):
     if request.method == "POST":
         session.delete(a_restaurant)
         session.commit()
-        return redirect(url_for('list_restaurants'))
+        return redirect(url_for('restaurants'))
     else:
         return render_template('deleteRestaurant.html', restaurant=a_restaurant)
 
@@ -67,6 +71,16 @@ def restaurant_menu(restaurant_id):
     menu = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
     return render_template('menuV2.html', restaurant=r, menu=menu)
 
+@app.route('/restaurant/<int:restaurant_id>/menu/JSON')
+def restaurant_menu_json(restaurant_id):
+    menu = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+    return jsonify(MenuItem=[m.serialize for m in menu])
+
+@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_item_id>/JSON')
+def restaurant_menu_item_json(restaurant_id,menu_item_id):
+    menu_item = session.query(MenuItem).filter_by(restaurant_id=restaurant_id, id=menu_item_id).one()
+
+    return jsonify(MenuItem=[menu_item.serialize])
 
 @app.route('/restaurant/<int:restaurant_id>/menu/new', methods=['GET', 'POST'])
 def menu_item_new(restaurant_id):
