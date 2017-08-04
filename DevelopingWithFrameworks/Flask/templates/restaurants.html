@@ -9,14 +9,28 @@
 <body>
 <h1>Restaurants</h1>
 <ul>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+    {% for m in messages %}
+    <h3> {{m}}</h3>
+    {% endfor %}
+
+    {% endif %}
+    {% endwith %}
+
     {% if not restaurants %}
     <p>There are no restaurants</p>
     {% else %}
     {% for restaurant in restaurants: %}
     <div class="restaurant">
-        <li>{{ restaurant.name }}</li>
-        <button type="button" onclick="window.location.href='{{ url_for('restaurant_edit', restaurant_id=restaurant.id)}}';">Edit</button>
-        <button type="button" onclick="window.location.href='{{ url_for('restaurant_delete', restaurant_id=restaurant.id)}}';">Delete</button>
+        <li><a href="{{ url_for('restaurant_menu',restaurant_id=restaurant.id) }}">{{ restaurant.name }}</a></li>
+        <button type="button"
+                onclick="window.location.href='{{ url_for('restaurant_edit', restaurant_id=restaurant.id)}}';">Edit
+        </button>
+        <button type="button"
+                onclick="window.location.href='{{ url_for('restaurant_delete', restaurant_id=restaurant.id)}}';">Delete
+        </button>
     </div>
     {% endfor %}
     {% endif %}

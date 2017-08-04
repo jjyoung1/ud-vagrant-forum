@@ -6,6 +6,17 @@
 </head>
 <body>
 <h1>{{restaurant.name}} - Menu</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+    {% for m in messages %}
+    <h3> {{m}}</h3>
+    {% endfor %}
+
+    {% endif %}
+    {% endwith %}
+
+
 <ul>
     {% if not menu %}
     <p>There are no items in the menu</p>
@@ -33,6 +44,8 @@
     <!--</form>-->
     {% endfor %}
     {% endif %}
+    <br>
+    <a href="{{ url_for('menu_item_new', restaurant_id=restaurant.id)}}">Add a new menu item</a>
 </ul>
 </body>
 </html>
